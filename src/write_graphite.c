@@ -100,6 +100,7 @@ struct wg_callback
     char    *prefix;
     char    *postfix;
     char     escape_char;
+    char    *cyanite_tenant;
 
     unsigned int format_flags;
 
@@ -390,7 +391,7 @@ static int wg_write_messages (const data_set_t *ds, const value_list_t *vl,
 
     memset (buffer, 0, sizeof (buffer));
     status = format_graphite (buffer, sizeof (buffer), ds, vl,
-            cb->prefix, cb->postfix, cb->escape_char, cb->format_flags);
+            cb->prefix, cb->postfix, cb->escape_char, cb->cyanite_tenant, cb->format_flags);
     if (status != 0) /* error message has been printed already. */
         return (status);
 
@@ -528,7 +529,7 @@ static int wg_config_node (oconfig_item_t *ci)
         else if (strcasecmp ("EscapeCharacter", child->key) == 0)
             config_set_char (&cb->escape_char, child);
         else if (strcasecmp ("CyaniteTenant", child->key) == 0)
-            config_set_char(&cb->cyanite_tenant, child);
+            cf_util_get_string(child, &cb->cyanite_tenant);
         else
         {
             ERROR ("write_graphite plugin: Invalid configuration "
