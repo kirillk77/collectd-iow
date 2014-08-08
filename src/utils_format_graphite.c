@@ -185,8 +185,8 @@ static void escape_graphite_string (char *buffer, char escape_char)
 
 int format_graphite (char *buffer, size_t buffer_size,
     data_set_t const *ds, value_list_t const *vl,
-    char const *prefix, char const *postfix, char const escape_char,
-    unsigned int flags)
+    char const *prefix, char const *postfix, char const *cyanite_tenant,
+    char const escape_char, unsigned int flags)
 {
     int status = 0;
     int i;
@@ -230,12 +230,26 @@ int format_graphite (char *buffer, size_t buffer_size,
         }
 
         /* Compute the graphite command */
-        message_len = (size_t) ssnprintf (message, sizeof (message),
-                "%s %s %u\r\n",
-                key,
-                values,
-                (unsigned int) CDTIME_T_TO_TIME_T (vl->time));
-        if (message_len >= sizeof (message)) {
+        if (cyanite_tenant)
+        {
+            message_len = (size_t) ssnprintf (message, sizeof (message),
+                                              "%s %s %u %s\r\n",
+                                              key,
+                                              values,
+                                              (unsigned int) CDTIME_T_TO_TIME_T (vl->time),
+                                              cyanite_tenant
+                                              );
+        }
+        else
+        {
+            message_len = (size_t) ssnprintf (message, sizeof (message),
+                                              "%s %s %u\r\n",
+                                              key,
+                                              values,
+                                              (unsigned int) CDTIME_T_TO_TIME_T (vl->time));
+        }
+            
+               if (message_len >= sizeof (message)) {
             ERROR ("format_graphite: message buffer too small: "
                     "Need %zu bytes.", message_len + 1);
             sfree (rates);

@@ -38,6 +38,7 @@
   *     Protocol "udp"
   *     LogSendErrors true
   *     Prefix "collectd"
+  *	    CyaniteTenant "NONE"
   *   </Carbon>
   * </Plugin>
   */
@@ -283,6 +284,7 @@ static void wg_callback_free (void *data)
     sfree(cb->service);
     sfree(cb->prefix);
     sfree(cb->postfix);
+    sfree(cb->cyanite_tenant);
 
     pthread_mutex_destroy (&cb->send_lock);
 
@@ -470,6 +472,7 @@ static int wg_config_node (oconfig_item_t *ci)
     cb->log_send_errors = WG_DEFAULT_LOG_SEND_ERRORS;
     cb->prefix = NULL;
     cb->postfix = NULL;
+    cb->cyanite_tenant = NULL;
     cb->escape_char = WG_DEFAULT_ESCAPE;
     cb->format_flags = GRAPHITE_STORE_RATES;
 
@@ -524,6 +527,8 @@ static int wg_config_node (oconfig_item_t *ci)
                     GRAPHITE_ALWAYS_APPEND_DS);
         else if (strcasecmp ("EscapeCharacter", child->key) == 0)
             config_set_char (&cb->escape_char, child);
+        else if (strcasecmp ("CyaniteTenant", child->key) == 0)
+            config_set_char(&cb->cyanite_tenant, child);
         else
         {
             ERROR ("write_graphite plugin: Invalid configuration "

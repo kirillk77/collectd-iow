@@ -32,7 +32,7 @@
 int format_graphite (char *buffer,
     size_t buffer_size, const data_set_t *ds,
     const value_list_t *vl, const char *prefix,
-    const char *postfix, const char escape_char,
-    unsigned int flags);
+    const char *postfix, const char *cyanite_tenant,
+    const char escape_char, unsigned int flags);
 
 #endif /* UTILS_FORMAT_GRAPHITE_H */
