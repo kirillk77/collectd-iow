@@ -151,7 +151,9 @@ static int gr_format_name (char *ret, int ret_len,
     else
         sstrncpy (tmp_plugin, n_plugin, sizeof (tmp_plugin));
 
-    if (n_type_instance[0] != '\0')
+    if (flags & GRAPHITE_EXCLUDE_TYPE)
+        ssnprintf (tmp_type, sizeof(tmp_type), "%s", n_type_instance)
+    else if (n_type_instance[0] != '\0')
         ssnprintf (tmp_type, sizeof (tmp_type), "%s%c%s",
             n_type,
             (flags & GRAPHITE_SEPARATE_INSTANCES) ? '.' : '-',

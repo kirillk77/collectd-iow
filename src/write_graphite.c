@@ -530,6 +530,9 @@ static int wg_config_node (oconfig_item_t *ci)
             config_set_char (&cb->escape_char, child);
         else if (strcasecmp ("CyaniteTenant", child->key) == 0)
             cf_util_get_string(child, &cb->cyanite_tenant);
+        else if (strcasecmp ("ExcludeType", child->key) == 0)
+            cf_util_get_flag (child, &cb->format_flags, 
+                    GRAPHITE_EXCLUDE_TYPE);
         else
         {
             ERROR ("write_graphite plugin: Invalid configuration "
