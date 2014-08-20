@@ -73,6 +73,7 @@ struct camqp_config_s
     /* publish & graphite format only */
     char    *prefix;
     char    *postfix;
+    char    *cyanite_tenant;
     char    escape_char;
     unsigned int graphite_flags;
 
@@ -796,8 +797,8 @@ static int camqp_write (const data_set_t *ds, const value_list_t *vl, /* {{{ */
     else if (conf->format == CAMQP_FORMAT_GRAPHITE)
     {
         status = format_graphite (buffer, sizeof (buffer), ds, vl,
-                    conf->prefix, conf->postfix, conf->escape_char,
-                    conf->graphite_flags);
+                    conf->prefix, conf->postfix, conf->cyanite_tenant, 
+                    conf->escape_char, conf->graphite_flags);
         if (status != 0)
         {
             ERROR ("amqp plugin: format_graphite failed with status %i.",
@@ -884,6 +885,7 @@ static int camqp_config_connection (oconfig_item_t *ci, /* {{{ */
     conf->prefix = NULL;
     conf->postfix = NULL;
     conf->escape_char = '_';
+    conf->cyanite_tenant = NULL;
     /* subscribe only */
     conf->exchange_type = NULL;
     conf->queue = NULL;
@@ -961,6 +963,8 @@ static int camqp_config_connection (oconfig_item_t *ci, /* {{{ */
             status = cf_util_get_string (child, &conf->prefix);
         else if ((strcasecmp ("GraphitePostfix", child->key) == 0) && publish)
             status = cf_util_get_string (child, &conf->postfix);
+        else if ((strcasecmp ("GraphiteCyaniteTenant", child->key) == 0) && publish)
+            status = cf_util_get_string (child, &conf->cyanite_tenant);
         else if ((strcasecmp ("GraphiteEscapeChar", child->key) == 0) && publish)
         {
             char *tmp_buff = NULL;

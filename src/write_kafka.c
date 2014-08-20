@@ -53,6 +53,7 @@ struct kafka_topic_context {
     u_int32_t                    key;
     char                        *prefix;
     char                        *postfix;
+    char                        *cyanite_tenant;
     char                         escape_char;
     char                        *topic_name;
 };
@@ -115,8 +116,8 @@ static int kafka_write(const data_set_t *ds, /* {{{ */
         break;
     case KAFKA_FORMAT_GRAPHITE:
         status = format_graphite(buffer, sizeof(buffer), ds, vl,
-                                 ctx->prefix, ctx->postfix, ctx->escape_char,
-                                 ctx->graphite_flags);
+                                 ctx->prefix, ctx->postfix, ctx->cyanite_tenant,
+                                 ctx->escape_char, ctx->graphite_flags);
         if (status != 0) {
             ERROR("write_kafka plugin: format_graphite failed with status %i.",
                   status);
@@ -301,6 +302,8 @@ static void kafka_config_topic(rd_kafka_conf_t *conf, oconfig_item_t *ci) /* {{{
             status = cf_util_get_string (child, &tctx->prefix);
         } else if (strcasecmp ("GraphitePostfix", child->key) == 0) {
             status = cf_util_get_string (child, &tctx->postfix);
+        } else if (strcasecmp ("GraphiteCyaniteTenant", child->key) == 0) {
+            status = cf_util_get_string (child, &tctx->cyanite_tenant);
         } else if (strcasecmp ("GraphiteEscapeChar", child->key) == 0) {
             char *tmp_buff = NULL;
             status = cf_util_get_string (child, &tmp_buff);
